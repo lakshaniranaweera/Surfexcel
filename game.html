@@ -235,7 +235,6 @@
             border-color: #00ff88;
             background: rgba(0, 255, 136, 0.15);
         }
-
         .result-box.fail {
             border-color: #ff4444;
             background: rgba(255, 68, 68, 0.15);
@@ -354,7 +353,7 @@
     let mainVideoActive = true;
     let introPlaying = false;
     let introPlayed = false;
-    let game1Result = null; // "win" or "lose"
+    let game1Result = null; // "win" or "fail"
 
     // Countdown state
     const COUNTDOWN_START = 12;
@@ -513,8 +512,7 @@
     // 3️⃣ Play the selected branch video
     function playNewVideo(src, result) {
         mainVideoActive = false;
-        // Convert 'fail' to 'lose' for consistency
-        game1Result = result === 'fail' ? 'lose' : result || null;
+        game1Result = result || null;
 
         video.onended = null;
         video.src = src;
@@ -538,9 +536,9 @@
         if (game1Result === "win") {
             game1Status.textContent = "✅ WIN";
             box1.classList.add("win");
-        } else if (game1Result === "lose") {
-            game1Status.textContent = "❌ LOSE";
-            box1.classList.add("lose");
+        } else if (game1Result === "fail") {
+            game1Status.textContent = "❌ FAIL";
+            box1.classList.add("fail");
         } else {
             game1Status.textContent = "Finished";
         }

@@ -257,7 +257,7 @@
             color: #00ff88;
         }
 
-        .overlay-title.lose {
+        .overlay-title.fail {
             color: #ff4444;
         }
 
@@ -469,7 +469,7 @@
             color: #00ff88;
         }
 
-        .result-status.lose {
+        .result-status.fail {
             color: #ff4444;
         }
 
@@ -514,7 +514,7 @@
             color: #fff;
         }
 
-        .result-box.lose {
+        .result-box.fail {
             border-color: #ff4444;
             background: rgba(255, 68, 68, 0.15);
             color: #fff;
@@ -566,7 +566,7 @@
         </video>
     </div>
 
-    <!-- Game 2 Result Video Overlay (Win/Lose) -->
+    <!-- Game 2 Result Video Overlay (Win/Fail) -->
     <div class="video-overlay" id="resultVideoOverlay">
         <video id="game2ResultVideo" playsinline webkit-playsinline></video>
     </div>
@@ -683,12 +683,11 @@
 
         // Load previous game result (from first video game)
         function loadPreviousResult() {
-            let stored = localStorage.getItem('game1Result'); // 'win' or 'lose'
-            if (stored === 'fail') stored = 'lose';
+            let stored = localStorage.getItem('game1Result'); // 'win' or 'fail'
             if (stored) {
                 const isWin = stored === 'win';
                 document.getElementById('prevResult').style.display = 'block';
-                document.getElementById('prevResultValue').textContent = isWin ? '✅ WIN' : '❌ LOSE';
+                document.getElementById('prevResultValue').textContent = isWin ? '✅ WIN' : '❌ FAIL';
             }
         }
 
@@ -971,9 +970,9 @@
             if (storedGame1 === 'win') {
                 g1Status.textContent = '✅ WIN';
                 box1.classList.add('win');
-            } else if (storedGame1 === 'fail' || storedGame1 === 'lose') {
-                g1Status.textContent = '❌ LOSE';
-                box1.classList.add('lose');
+            } else if (storedGame1 === 'fail') {
+                g1Status.textContent = '❌ FAIL';
+                box1.classList.add('fail');
             }
             
             // Update Game 2 box (current)

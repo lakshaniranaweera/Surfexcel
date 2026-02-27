@@ -346,7 +346,7 @@
       
     }
 
-    .result-box.lose {
+    .result-box.fail {
       border-color: #ff4444;
       background: rgba(255, 68, 68, 0.15);
       color: #fff;
@@ -418,7 +418,7 @@
       </video>
     </div>
 
-    <!-- Game 3 Result Video Overlay (Win/Lose) -->
+    <!-- Game 3 Result Video Overlay (Win/Fail) -->
     <div class="overlay hidden" id="resultVideoOverlay">
       <video id="game3ResultVideo" playsinline webkit-playsinline></video>
     </div>
@@ -575,7 +575,7 @@
 
       const isWin = gameState.score >= WIN_SCORE;
       // Store simple win/lose flag for final summary
-      localStorage.setItem('game3Result', isWin ? 'win' : 'lose');
+      localStorage.setItem('game3Result', isWin ? 'win' : 'fail');
 
       // Update Game 1 box
       const storedGame1 = localStorage.getItem('game1Result');
@@ -584,9 +584,9 @@
       if (storedGame1 === 'win') {
         g1Status.textContent = '✅ WIN';
         box1.classList.add('win');
-      } else if (storedGame1 === 'lose') {
-        g1Status.textContent = '❌ LOSE';
-        box1.classList.add('lose');
+      } else if (storedGame1 === 'fail') {
+        g1Status.textContent = '❌ FAIL';
+        box1.classList.add('fail');
       }
 
       // Update Game 2 box
@@ -596,9 +596,9 @@
       if (storedGame2 === 'win') {
         g2Status.textContent = '✅ WIN';
         box2.classList.add('win');
-      } else if (storedGame2 === 'lose') {
-        g2Status.textContent = '❌ LOSE';
-        box2.classList.add('lose');
+      } else if (storedGame2 === 'fail') {
+        g2Status.textContent = '❌ FAIL';
+        box2.classList.add('fail');
       }
 
       // Update Game 3 box (current)
@@ -609,9 +609,9 @@
         box3.classList.remove('current');
         box3.classList.add('win');
       } else {
-        g3Status.textContent = '❌ LOSE';
+        g3Status.textContent = '❌ FAIL';
         box3.classList.remove('current');
-        box3.classList.add('lose');
+        box3.classList.add('fail');
       }
       const showOverlay = () => {
         gameOverOverlay.classList.remove('hidden');
@@ -631,7 +631,7 @@
       }
 
       // Use separate win/lose videos for Game 3
-      const src = isWin ? 'videos/03 Game - win.mp4' : 'videos/03 Game - loss.mp4';
+      const src = isWin ? 'videos/03 Game - win.mp4' : 'videos/03 Game - fail.mp4';
 
       resultVideo.src = src;
       resultVideo.currentTime = 0;
