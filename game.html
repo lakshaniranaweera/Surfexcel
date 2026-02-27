@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Touch Video Game</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Gill Sans MT";
+        }
+
+        /* Fixed 1080x1920 portrait game area (9:16) */
+        .game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1080px;
+            max-height: 1920px;
+            aspect-ratio: 9 / 16;
+            background: black;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Start Screen */
+        #startScreen {
+            background: rgb(22, 56, 104);
+            color: white;
+            font-size: 3.5rem;
+            /* animation: pulse 1.5s infinite; */
+            z-index: 10;
+        }
+
+        #startScreen .fs-5 {
+            font-size: 2rem !important;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Countdown timer on game screen */
+        #countdownTimer {
+            position: absolute;
+            top: 135px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            color: rgb(22, 56, 104);
+            font-size: 8rem;
+            font-weight: bold;
+            
+        }
+
+        /* Instruction screen */
+        #instructionScreen {
+            background-color: rgb(22, 56, 104);
+            background-image: url("New folder (8)/new.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Place wording area nearer the top and a bit smaller */
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding-top: 240px;
+                }
+
+                /* Glassmorphic popup for instructionScreen */
+                #instructionScreen .glass-popup {
+                    position: absolute;
+                    top: 36%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 900px;
+                    height: 1200px;
+                    background: rgba(30, 30, 40, 0.55);
+                    border-radius: 48px;
+                    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+                    backdrop-filter: blur(18px) saturate(140%);
+                    border: 2px solid rgba(255,255,255,0.18);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 20;
+                }
+        
+        #instructionScreen .p-4 {
+            display: flex;
+            flex-direction: column;
+            /* justify-content: flex-start; */
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            flex: 1;
+        }
+        #instructionScreen h2 {
+            font-size: 7rem;
+            text-transform: uppercase;
+            margin-bottom: 700px;
+        }
+        #instructionScreen p {
+            font-size: 3.2rem;
+            margin-bottom: 570px;
+            font-family: "Gill Sans MT", GillSans, "Gill Sans", Arial, sans-serif !important;
+        }
+        #instructionScreen .btn {
+            font-weight: bold;
+            font-size: 3.5rem;
+            color: rgb(22, 56, 104);
+            padding: 10px 50px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            /* Green Start Game button gradient */
+            background: linear-gradient(135deg,  #ffffff);
+            font-family: "Gill Sans MT";
+            margin-bottom: 110px;
+            align-self: center;
+        }
+
+        /* Result screen with 3 boxes - match Game 2 overlay layout */
+        #resultScreen {
+            background-color: rgb(22, 56, 104);
+            background-image: url("New folder (8)/new.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #resultScreen .overlay-content {
+            text-align: center;
+            padding: 20px 20px 10px;
+            margin: 20px auto 0;
+            max-width: 720px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Glassmorphic popup for resultScreen */
+        #resultScreen .glass-popup {
+            position: absolute;
+            top: 36%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px;
+            height: 1200px;
+            background: rgba(30, 30, 40, 0.55);
+            border-radius: 48px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+            backdrop-filter: blur(18px) saturate(140%);
+            border: 2px solid rgba(255,255,255,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        #resultScreen h2 {
+            font-size: 5rem;
+            margin-bottom: 0;
+        }
+
+        .result-boxes {
+            display: flex;
+            flex-direction: column;
+            gap: 94px;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto 10px;
+            height: 500px;
+        }
+
+        .result-box {
+            border: 4px solid #333;
+            border-radius: 66px;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 5rem;
+            color: #888;
+            background: rgba(0,0,0,0.3);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-box.current {
+            border: 4px dashed #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            color: #fff;
+        }
+
+        .result-box.win {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .result-box.fail {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.15);
+        }
+
+        .result-box .game-label {
+            font-size: 3.4rem;
+            color: #aaa;
+            margin-bottom: 0;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 18px;
+        }
+
+        .result-box .game-status {
+            font-size: 4.4rem;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #resultScreen .btn {
+            font-size: 3.4rem;
+            padding: 24px 70px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg,  #ffffff);
+            border: none;
+            color: rgb(22, 56, 104);
+            margin-top: 20px;
+            height: 100px;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-wrapper">
+    <!-- 1️⃣ START SCREEN -->
+    <div id="startScreen" class="screen text-center">
+        <img src="assets/1st.png" alt="Start Game" class="w-100 h-100" style="object-fit: cover;">
+    </div>
+
+    <!-- 2️⃣ INSTRUCTION SCREEN -->
+    <div id="instructionScreen" class="screen hidden text-center text-white">
+    
+        <div class="glass-popup">
+            <div class="p-4">
+                <h2 class="mb-3">How to Play</h2><br><br>
+                <p class="mb-2">1.Read the instructions carefully before<br> each round.</p>
+                <p class="mb-2">2.Tap the screen to trigger special actions.</p>
+                <p class="mb-2">3.Please tap the screen in specific indicated areas for each game round.</p>
+                <p class="mb-3">4.All game rounds are to be completed<br> within a specified time period.</p>
+                <br><br>
+                <button id="startGameBtn" class="btn btn-primary mt-2">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3️⃣ GAME SCREEN -->
+    <div id="gameScreen" class="screen hidden">
+        <div id="countdownTimer" class="hidden">12</div>
+        <video id="gameVideo" preload="auto">
+            <source src="video.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- 4️⃣ RESULT SCREEN -->
+    <div id="resultScreen" class="screen hidden text-center text-white">
+        <div class="glass-popup">
+            <div class="overlay-content">
+                <h2>GAME RESULTS</h2>
+                <br><br><br><br>
+                <div class="result-boxes">
+                    <div class="result-box current" id="box1">
+                        <div class="game-label">Game 1</div>
+                        <div class="game-status" id="game1Status">—</div>
+                    </div>
+                    <div class="result-box" id="box2">
+                        <div class="game-label">Game 2</div>
+                        <div class="game-status">Pending</div>
+                    </div>
+                    <div class="result-box" id="box3">
+                        <div class="game-label">Game 3</div>
+                        <div class="game-status">Pending</div>
+                    </div>
+                </div>
+                <br><br> <br><br>
+                <button id="nextGameBtn" class="btn btn-success">NEXT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const startScreen = document.getElementById("startScreen");
+    const instructionScreen = document.getElementById("instructionScreen");
+    const startGameBtn = document.getElementById("startGameBtn");
+    const gameScreen = document.getElementById("gameScreen");
+    const video = document.getElementById("gameVideo");
+    const resultScreen = document.getElementById("resultScreen");
+    const nextGameBtn = document.getElementById("nextGameBtn");
+    const box1 = document.getElementById("box1");
+    const game1Status = document.getElementById("game1Status");
+    const countdownTimer = document.getElementById("countdownTimer");
+
+    const MAIN_VIDEO_SRC = "video.mp4";
+    const INTRO_VIDEO_SRC = "videos/01_game_pop.mp4";
+
+    let gameStarted = false;
+    let videoPlaying = false;
+    let mainVideoActive = true;
+    let introPlaying = false;
+    let introPlayed = false;
+    let game1Result = null; // "win" or "lose"
+
+    // Countdown state
+    const COUNTDOWN_START = 12;
+    let countdownValue = COUNTDOWN_START;
+    let countdownInterval = null;
+    let countdownStarted = false;
+
+    function resetCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        countdownValue = COUNTDOWN_START;
+        countdownStarted = false;
+        if (countdownTimer) {
+            countdownTimer.textContent = countdownValue;
+            countdownTimer.classList.add("hidden");
+        }
+    }
+
+    function startCountdown() {
+        if (countdownStarted) return;
+        resetCountdown();
+        if (!countdownTimer) return;
+        countdownStarted = true;
+        countdownTimer.classList.remove("hidden");
+        countdownInterval = setInterval(() => {
+            countdownValue--;
+            if (countdownValue <= 0) {
+                countdownValue = 0;
+                countdownTimer.textContent = countdownValue;
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                countdownStarted = false;
+                // Time ran out: hide countdown and, if main video is still running
+                // without a successful tap, branch to VideoA (fail path).
+                countdownTimer.classList.add("hidden");
+                if (gameStarted && mainVideoActive && videoPlaying) {
+                    video.pause();
+                    videoPlaying = false;
+                    playNewVideo("videoA.mp4", "fail");
+                }
+                return;
+            }
+            countdownTimer.textContent = countdownValue;
+        }, 1000);
+    }
+
+    // Define video segments for touch logic
+    const segments = [
+        // Set result for each branch video; adjust as needed
+        { start: 0, end: 6, src: "videoA.mp4", result: "fail" },
+        { start: 7, end: 8, src: "videoB.mp4", result: "win" },
+        { start: 9, end: 12, src: "videoC.mp4", result: "fail" }
+    ];
+
+    // 1️⃣ Touch Start Screen → show instructions
+    startScreen.addEventListener("click", () => {
+        startScreen.classList.add("hidden");
+        instructionScreen.classList.remove("hidden");
+    });
+
+    // 1️⃣b Instruction Screen → Start Game
+    startGameBtn.addEventListener("click", () => {
+        instructionScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+        gameStarted = true;
+
+        // Play intro video before the main game
+        playIntroVideo();
+    });
+
+    // 2️⃣ Game Screen Touch Logic
+    gameScreen.addEventListener("click", () => {
+        if (!gameStarted) return;
+
+        // Ignore taps while intro video is playing
+        if (introPlaying) return;
+
+        // First touch → play main video
+        if (!videoPlaying && mainVideoActive) {
+            ensureMainVideoLoaded();
+            // Start 12s countdown when main video starts
+            startCountdown();
+            video.play();
+            videoPlaying = true;
+            return;
+        }
+
+        // Touch during main video → pause & check time
+        if (videoPlaying && mainVideoActive) {
+            // Second click: stop/hide countdown and decide outcome
+            resetCountdown();
+
+            video.pause();
+            videoPlaying = false;
+
+            const currentTime = video.currentTime;
+
+            // Find which segment matches current time
+            const segment = segments.find(s => currentTime >= s.start && currentTime < s.end);
+
+            if (segment) {
+                playNewVideo(segment.src, segment.result);
+            } else {
+                // Optional: if clicked outside range, resume main video
+                video.play();
+                videoPlaying = true;
+            }
+        }
+    });
+
+    function ensureMainVideoLoaded() {
+        if (video.src.includes(MAIN_VIDEO_SRC)) return;
+        video.src = MAIN_VIDEO_SRC;
+        video.load();
+    }
+
+    // Play intro video once before the main game video
+    function playIntroVideo() {
+        introPlaying = true;
+        mainVideoActive = false;
+
+        video.onended = null;
+        video.src = INTRO_VIDEO_SRC;
+        video.load();
+        video.play();
+        videoPlaying = true;
+
+        // While intro is playing, hide the countdown timer
+        if (countdownTimer) {
+            countdownTimer.classList.add("hidden");
+            countdownTimer.textContent = COUNTDOWN_START;
+        }
+
+        video.onended = () => {
+            introPlaying = false;
+            introPlayed = true;
+            mainVideoActive = true;
+
+            // Prepare main video but let the player start it with a tap
+            ensureMainVideoLoaded();
+            video.pause();
+            video.currentTime = 0;
+            videoPlaying = false;
+
+            // Show the timer (12) on screen for the main video,
+            // even before the player taps to start it.
+            if (countdownTimer) {
+                countdownTimer.classList.remove("hidden");
+                countdownTimer.textContent = COUNTDOWN_START;
+            }
+        };
+    }
+
+    // 3️⃣ Play the selected branch video
+    function playNewVideo(src, result) {
+        mainVideoActive = false;
+        // Convert 'fail' to 'lose' for consistency
+        game1Result = result === 'fail' ? 'lose' : result || null;
+
+        video.onended = null;
+        video.src = src;
+        video.load();
+        video.play();
+        videoPlaying = true;
+
+        // After branch video ends, show result screen
+        video.onended = () => {
+            showResultScreen();
+        };
+    }
+
+    function showResultScreen() {
+        gameScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+
+        // Hide/stop countdown when leaving game screen
+        resetCountdown();
+
+        if (game1Result === "win") {
+            game1Status.textContent = "✅ WIN";
+            box1.classList.add("win");
+        } else if (game1Result === "lose") {
+            game1Status.textContent = "❌ LOSE";
+            box1.classList.add("lose");
+        } else {
+            game1Status.textContent = "Finished";
+        }
+
+        // Save result for later use
+        if (game1Result) {
+            localStorage.setItem("game1Result", game1Result);
+        }
+    }
+
+    // 4️⃣ Next Game button
+    nextGameBtn.addEventListener("click", () => {
+        window.location.href = "next-game.html";
+    });
+</script>
+
+</body>
+</html>

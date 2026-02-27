@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Result</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #fff;
+      font-family: Impact, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 1080px;
+      max-height: 1920px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      aspect-ratio: 9 / 16;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .info {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 14px;
+      border-radius: 20px;
+      
+      font-size: 0.9rem;
+    }
+
+    .back-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 26px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4ecdc4, #2eb8af);
+      color: #002233;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="info" id="info"></div>
+    <video id="resultVideo" autoplay playsinline></video>
+    <!-- <button class="back-btn" onclick="window.location.href='game.html'"></button> -->
+  </div>
+
+  <script>
+    (function chooseFinalVideo() {
+      const r1 = localStorage.getItem('game1Result'); // 'win' or 'lose'
+      const r2 = localStorage.getItem('game2Result'); // 'win' or 'lose'
+      const r3 = localStorage.getItem('game3Result'); // 'win' or 'lose'
+
+      const results = [r1, r2, r3];
+      const wins = results.filter(r => r === 'win').length;
+
+      let src;
+      let label;
+
+      if (wins === 3) {
+        src = 'results/Final Winner page.mp4';
+        // label = 'You won all 3 games!';
+      } else if (wins === 2) {
+        src = 'results/Final Winner page.mp4';
+        // label = 'You won 2 out of 3 games!';
+      } else {
+        src = 'results/Final Game - loss.mp4';
+        // label = 'Better luck next time!';
+      }
+
+      const infoEl = document.getElementById('info');
+      const videoEl = document.getElementById('resultVideo');
+
+      infoEl.textContent = label;
+      videoEl.src = src;
+
+      // After the result video ends, wait 5 seconds then go back to game.html
+      videoEl.onended = function () {
+        setTimeout(function () {
+          window.location.href = 'game.html';
+        }, 5000);
+      };
+
+      // Try to play; ignore autoplay errors (e.g., muted policy)
+      const playPromise = videoEl.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          // Autoplay might be blocked; user can tap video to start.
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
