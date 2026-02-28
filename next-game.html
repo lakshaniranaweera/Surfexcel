@@ -635,7 +635,7 @@
         let gameState = {
             totalWeight: 0,
             targetWeight: 3000,
-            timeLimit: 20,
+            timeLimit: 20, // 15 seconds only
             isPlaying: false,
             items: [],
             spawnInterval: null,
@@ -663,15 +663,17 @@
         function startTimer() {
             clearInterval(timerInterval);
             remainingSeconds = gameState.timeLimit;
-            // Show plain seconds (same style as game3.html)
             timerDisplay.textContent = remainingSeconds;
             timerInterval = setInterval(() => {
                 remainingSeconds -= 1;
                 timerDisplay.textContent = remainingSeconds;
-                
-                // Time's up - player loses
+                // Time's up - fail if not exactly 3Kg
                 if (remainingSeconds <= 0) {
-                    endGame(true); // true = time ran out
+                    if (gameState.totalWeight === gameState.targetWeight) {
+                        endGame(false); // Win
+                    } else {
+                        endGame(true); // Fail
+                    }
                 }
             }, 1000);
         }
@@ -818,9 +820,11 @@
 
                 updateDisplay();
 
-                // Check win/lose condition
-                if (gameState.totalWeight >= gameState.targetWeight) {
-                    endGame(false); // false = time didn't run out
+                // Win only if exactly 3Kg
+                if (gameState.totalWeight === gameState.targetWeight) {
+                    endGame(false); // Win
+                } else if (gameState.totalWeight > gameState.targetWeight) {
+                    endGame(true); // Fail
                 }
             });
         }
@@ -956,13 +960,13 @@
             gameState.isPlaying = false;
             clearInterval(gameState.spawnInterval);
             stopTimer();
-            
-            // Win if target reached or exceeded AND time didn't run out
-            const isWin = !timeOut && gameState.totalWeight >= gameState.targetWeight;
-            
+
+            // Win only if exactly 3Kg and time didn't run out
+            const isWin = !timeOut && gameState.totalWeight === gameState.targetWeight;
+
             // Save result for this game
             localStorage.setItem('game2Result', isWin ? 'win' : 'fail');
-            
+
             // Update Game 1 box
             const storedGame1 = localStorage.getItem('game1Result');
             const box1 = document.getElementById('box1');
@@ -974,7 +978,7 @@
                 g1Status.textContent = '❌ FAIL';
                 box1.classList.add('fail');
             }
-            
+
             // Update Game 2 box (current)
             const box2 = document.getElementById('box2');
             const g2Status = document.getElementById('g2Status');
@@ -987,16 +991,19 @@
                 box2.classList.remove('current');
                 box2.classList.add('fail');
             }
-            
-            const showOverlay = () => {
-                gameOverlay.classList.add('show');
-            };
 
-            if (resultVideoOverlay && resultVideo) {
-                playResultVideo(isWin, showOverlay);
-            } else {
-                setTimeout(showOverlay, 500);
-            }
+            // Show score for 3 seconds before overlay
+            setTimeout(() => {
+                const showOverlay = () => {
+                    gameOverlay.classList.add('show');
+                };
+                if (resultVideoOverlay && resultVideo) {
+                    // Always play result video, win or fail
+                    playResultVideo(isWin, showOverlay);
+                } else {
+                    setTimeout(showOverlay, 500);
+                }
+            }, 3000);
         }
 
         function playResultVideo(isWin, onComplete) {
@@ -1006,7 +1013,7 @@
             }
 
             // Use separate win/lose videos for Game 2
-            const src = isWin ? 'videos/02 Game - win.mp4' : 'videos/02 Game - fail.mp4';
+            const src = isWin ? 'videos/02 Game - win.mp4' : 'videos/02 Game - loss.mp4';
 
             resultVideo.src = src;
             resultVideo.currentTime = 0;

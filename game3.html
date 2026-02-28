@@ -481,11 +481,11 @@
 
     const GAME_DURATION = 20; // seconds
     const SPAWN_INTERVAL = 900; // ms
-    const WIN_SCORE = 10; // catches needed to count as a win
+    const WIN_SCORE = 20; // must catch exactly 20 items
 
     // Cloth fall speed settings (px per second)
-    const MIN_FALL_SPEED = 300;
-    const MAX_FALL_SPEED = 620;
+    const MIN_FALL_SPEED = 600;
+    const MAX_FALL_SPEED = 1200;
 
     let gameState = {
       running: false,
@@ -573,8 +573,16 @@
       if (gameState.timerId) clearInterval(gameState.timerId);
       if (gameState.rafId) cancelAnimationFrame(gameState.rafId);
 
-      const isWin = gameState.score >= WIN_SCORE;
-      // Store simple win/lose flag for final summary
+      let isWin = false;
+      if (gameState.score === WIN_SCORE) {
+        isWin = true;
+      } else {
+        isWin = false;
+      }
+      // If player exceeds 20 items, fail immediately
+      if (gameState.score > WIN_SCORE) {
+        isWin = false;
+      }
       localStorage.setItem('game3Result', isWin ? 'win' : 'fail');
 
       // Update Game 1 box
@@ -631,7 +639,7 @@
       }
 
       // Use separate win/lose videos for Game 3
-      const src = isWin ? 'videos/03 Game - win.mp4' : 'videos/03 Game - fail.mp4';
+      const src = isWin ? 'videos/03 Game - win.mp4' : 'videos/03 Game - loss.mp4';
 
       resultVideo.src = src;
       resultVideo.currentTime = 0;
@@ -698,6 +706,11 @@
           if (scoreValue) scoreValue.textContent = gameState.score;
           if (washerScore) washerScore.textContent = gameState.score;
           cloth.el.remove();
+          // If player exceeds 20 items, fail immediately
+          if (gameState.score > WIN_SCORE) {
+            endGame();
+            return;
+          }
           continue;
         }
 
