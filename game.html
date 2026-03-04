@@ -422,6 +422,10 @@
         gameScreen.classList.remove("hidden");
         gameStarted = true;
 
+        // Track play count
+        const playCount = parseInt(localStorage.getItem("gamePlayCount") || "0", 10);
+        localStorage.setItem("gamePlayCount", playCount + 1);
+
         // Play intro video before the main game
         playIntroVideo();
     });
@@ -536,9 +540,15 @@
         if (game1Result === "win") {
             game1Status.textContent = "✅ WIN";
             box1.classList.add("win");
+            // Track win
+            const winCount = parseInt(localStorage.getItem("gameWinCount") || "0", 10);
+            localStorage.setItem("gameWinCount", winCount + 1);
         } else if (game1Result === "fail") {
             game1Status.textContent = "❌ FAIL";
             box1.classList.add("fail");
+            // Track fail
+            const failCount = parseInt(localStorage.getItem("gameFailCount") || "0", 10);
+            localStorage.setItem("gameFailCount", failCount + 1);
         } else {
             game1Status.textContent = "Finished";
         }

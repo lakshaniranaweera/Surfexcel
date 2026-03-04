@@ -40,6 +40,24 @@
       background: linear-gradient(135deg, #4ecdc4, #ffffff);
       color: #0a1a2f;
     }
+    .admin-btn {
+      font-size: 1.2rem;
+      padding: 10px 30px;
+      border-radius: 25px;
+      border: 2px solid rgba(78, 205, 196, 0.6);
+      background: transparent;
+      color: #4ecdc4;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.2s;
+      font-family: 'Gill Sans MT', Arial, sans-serif;
+    }
+    .admin-btn:hover {
+      background: rgba(78, 205, 196, 0.1);
+      border-color: #4ecdc4;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -47,6 +65,7 @@
     <h1>Welcome to the Game!</h1>
     <p>Click below to start the experience.</p>
     <button class="launch-btn" onclick="window.location.href='game.html'">Start Game</button>
+    <button class="admin-btn" onclick="window.open('admin.html', 'admin')">📊 Admin Panel</button>
   </div>
 </body>
 </html>

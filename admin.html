@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Game Stats</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a1a2f 0%, #163868 100%);
+      color: #fff;
+      font-family: 'Gill Sans MT', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .admin-container {
+      background: rgba(30, 30, 40, 0.55);
+      border-radius: 32px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px) saturate(140%);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      padding: 60px 80px;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stats-box {
+      background: rgba(78, 205, 196, 0.1);
+      border: 2px solid rgba(78, 205, 196, 0.5);
+      border-radius: 20px;
+      padding: 40px 30px;
+      margin: 30px 0;
+    }
+
+    .stat-label {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .stat-value {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #4ecdc4;
+      font-family: 'Courier New', monospace;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4ecdc4, #47b8ac);
+      color: #0a1a2f;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+      border: 2px solid #4ecdc4;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(78, 205, 196, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: rgba(255, 76, 76, 0.3);
+      color: #ff4c4c;
+      border: 2px solid #ff4c4c;
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 76, 76, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .info-text {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-top: 20px;
+      font-style: italic;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #4ecdc4;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <h1>📊 Admin Panel</h1>
+
+    <div class="stats-box">
+      <div class="stat-label">Total Plays</div>
+      <div class="stat-value" id="playCount">0</div>
+    </div>
+
+    <div class="stats-box">
+      <div class="stat-label">Total Wins</div>
+      <div class="stat-value" id="winCount">0</div>
+    </div>
+
+    <div class="stats-box">
+      <div class="stat-label">Total Fails</div>
+      <div class="stat-value" id="failCount">0</div>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-secondary" onclick="refreshStats()">🔄 Refresh</button>
+      <button class="btn-danger" onclick="resetStats()">🗑️ Reset Stats</button>
+      <button class="btn-primary" onclick="goToGame()">▶️ Play Game</button>
+    </div>
+
+    <p class="info-text">Stats are stored locally in your browser</p>
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+
+  <script>
+    // Load and display stats
+    function loadStats() {
+      const playCount = parseInt(localStorage.getItem("gamePlayCount") || "0", 10);
+      const winCount = parseInt(localStorage.getItem("gameWinCount") || "0", 10);
+      const failCount = parseInt(localStorage.getItem("gameFailCount") || "0", 10);
+
+      document.getElementById("playCount").textContent = playCount;
+      document.getElementById("winCount").textContent = winCount;
+      document.getElementById("failCount").textContent = failCount;
+    }
+
+    // Refresh stats
+    function refreshStats() {
+      loadStats();
+      alert("Stats refreshed!");
+    }
+
+    // Reset all stats
+    function resetStats() {
+      if (confirm("Are you sure you want to reset all stats? This cannot be undone.")) {
+        localStorage.setItem("gamePlayCount", "0");
+        localStorage.setItem("gameWinCount", "0");
+        localStorage.setItem("gameFailCount", "0");
+        loadStats();
+        alert("Stats have been reset!");
+      }
+    }
+
+    // Go to game
+    function goToGame() {
+      window.location.href = "game.html";
+    }
+
+    // Load stats on page load
+    window.addEventListener("load", loadStats);
+
+    // Auto-refresh stats every 5 seconds (useful if viewing in one tab and playing in another)
+    setInterval(loadStats, 5000);
+  </script>
+</body>
+</html>
